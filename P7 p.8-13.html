@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Phonics! 寶可夢特訓 (純淨大圖版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        /* 隱藏原生滾動條，保持畫面乾淨 */
+        ::-webkit-scrollbar { height: 8px; width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        body { margin: 0; padding: 0; overflow: hidden; /* 強制不出現全域滾動條 */ }
+        .btn-press:active { transform: scale(0.95); }
+        .highlight-team {
+            box-shadow: 0 0 25px rgba(250, 204, 21, 1);
+            border-color: #facc15 !important;
+            transform: scale(1.05);
+            transition: all 0.3s ease;
+        }
+        input[type="checkbox"] { accent-color: #2563eb; }
+    </style>
+</head>
+<body class="bg-blue-50 font-sans h-screen w-screen flex flex-col relative text-gray-800">
+
+    <audio id="bomb-sound" src="https://www.myinstants.com/media/sounds/explosion.mp3" preload="auto"></audio>
+
+    <div id="setup-screen" class="absolute inset-0 z-40 bg-blue-50 flex items-center justify-center p-4 transition-opacity duration-500">
+        <div class="bg-white rounded-[3rem] shadow-2xl p-12 max-w-5xl w-full border-4 border-blue-200 text-center relative overflow-hidden">
+            
+            <h1 class="text-6xl font-black text-blue-600 mb-2 drop-shadow-sm">🎧 Phonics Challenge!</h1>
+            <p class="text-2xl text-gray-400 font-bold mb-10">R-Controlled Vowels</p>
+            
+            <div class="bg-blue-50 rounded-3xl p-8 mb-8 border-2 border-blue-100">
+                <h2 class="text-3xl font-bold text-gray-700 mb-6">🎯 選擇本節課挑戰模式 (可複選)</h2>
+                <div class="flex flex-wrap justify-center gap-4" id="mode-checkboxes">
+                    <label class="cursor-pointer flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border-4 border-blue-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-black text-blue-800 text-3xl shadow-sm">
+                        <input type="checkbox" value="ar" checked class="w-8 h-8"> ar
+                    </label>
+                    <label class="cursor-pointer flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border-4 border-blue-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-black text-blue-800 text-3xl shadow-sm">
+                        <input type="checkbox" value="er" checked class="w-8 h-8"> er
+                    </label>
+                    <label class="cursor-pointer flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border-4 border-blue-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-black text-blue-800 text-3xl shadow-sm">
+                        <input type="checkbox" value="ir" checked class="w-8 h-8"> ir
+                    </label>
+                    <label class="cursor-pointer flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border-4 border-blue-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-black text-blue-800 text-3xl shadow-sm">
+                        <input type="checkbox" value="ur" checked class="w-8 h-8"> ur
+                    </label>
+                    <label class="cursor-pointer flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border-4 border-blue-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-black text-blue-800 text-3xl shadow-sm">
+                        <input type="checkbox" value="or" checked class="w-8 h-8"> or
+                    </label>
+                    <label class="cursor-pointer flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border-4 border-blue-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-black text-blue-800 text-3xl shadow-sm">
+                        <input type="checkbox" value="oor" checked class="w-8 h-8"> oor
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-center gap-6 mb-10">
+                <label class="text-2xl font-bold text-gray-700">參與組別數 (1-26):</label>
+                <input type="number" id="team-count" min="1" max="26" value="2" class="border-4 border-gray-300 rounded-2xl px-4 py-2 w-28 text-center text-3xl font-bold focus:border-blue-500 focus:outline-none">
+            </div>
+
+            <div class="flex justify-center gap-6">
+                <button onclick="resetAllData()" class="bg-gray-200 hover:bg-red-500 hover:text-white text-gray-600 font-bold py-4 px-8 rounded-full transition-colors text-xl">
+                    清除所有紀錄
+                </button>
+                <button onclick="startGame()" class="btn-press bg-green-500 hover:bg-green-600 text-white font-black py-4 px-16 rounded-full shadow-lg transition-transform text-3xl">
+                    🚀 開始挑戰 !
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-screen" class="hidden flex-col h-full w-full p-4 gap-4">
+        
+        <div class="flex items-center justify-between w-full shrink-0 gap-4">
+            <button onclick="showSetup()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-xl shadow-sm shrink-0 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                設定
+            </button>
+            
+            <div id="scoreboard" class="flex-1 flex overflow-x-auto gap-3 pb-2 pt-1 px-1">
+                </div>
+        </div>
+
+        <div class="w-full bg-gray-200 rounded-full h-3 shrink-0">
+            <div id="progress-bar" class="bg-green-400 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+
+        <div class="flex-1 min-h-0 flex flex-row gap-8 items-center justify-center bg-white rounded-[2rem] shadow-xl border-4 border-blue-200 p-6 relative">
+            
+            <div class="w-1/2 h-full flex flex-col items-center justify-center shrink-0">
+                <div class="relative flex-1 min-h-0 w-full flex justify-center items-center mb-6">
+                    <img id="question-img" class="max-h-full aspect-square object-cover rounded-3xl" src="" alt="Question Image">
+                    
+                    <input type="file" id="file-upload" class="hidden" accept="image/*" onchange="handleImageUpload(event)">
+                    
+                    <button onclick="document.getElementById('file-upload').click()" class="absolute bottom-4 right-[10%] bg-white/90 hover:bg-white text-gray-700 font-bold py-3 px-6 rounded-2xl flex items-center justify-center gap-2 border border-gray-300 shadow-lg backdrop-blur-sm transition-transform hover:scale-105">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        自訂圖片
+                    </button>
+                </div>
+
+                <button id="play-btn" onclick="playQuestionAudio()" class="btn-press bg-yellow-400 hover:bg-yellow-500 text-yellow-900 py-6 rounded-full shadow-lg flex items-center justify-center transition-colors w-[80%] shrink-0">
+                    <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd"></path></svg>
+                </button>
+            </div>
+
+            <div id="options-container" class="w-1/2 h-full grid grid-cols-2 gap-6">
+                </div>
+            
+            <div id="feedback-overlay" class="hidden absolute inset-0 bg-white/95 flex items-center justify-center z-20 flex-col rounded-[2rem]">
+                <p id="feedback-word" class="font-black text-blue-600 animate__animated animate__zoomIn drop-shadow-md tracking-widest lowercase" style="font-size: 16vw;"></p>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="koffing-overlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/109.png" class="w-[40vw] h-[40vw] animate__animated animate__zoomIn" alt="瓦斯彈">
+    </div>
+
+    <script>
+        const defaultQuestions = [
+            { word: "bird",   vowel: "ir", emoji: "🐦" },
+            { word: "nurse",  vowel: "ur", emoji: "👩‍⚕️" },
+            { word: "car",    vowel: "ar", emoji: "🚗" },
+            { word: "corn",   vowel: "or", emoji: "🌽" },
+            { word: "door",   vowel: "oor", emoji: "🚪" },
+            { word: "summer", vowel: "er", emoji: "🏖️☀️🍧" },
+            { word: "far", vowel: "ar", emoji: "🔭" },
+            { word: "hard", vowel: "ar", emoji: "🧱" },
+            { word: "question mark", vowel: "ar", emoji: "❓" },
+            { word: "jar", vowel: "ar", emoji: "🫙" },
+            { word: "park", vowel: "ar", emoji: "🏞️" },
+            { word: "letter", vowel: "er", emoji: "✉️" },
+            { word: "mother", vowel: "er", emoji: "👩‍👧" },
+            { word: "ruler", vowel: "er", emoji: "📏" },
+            { word: "tower", vowel: "er", emoji: "🗼" },
+            { word: "winter", vowel: "er", emoji: "⛄" },
+            { word: "first", vowel: "ir", emoji: "🥇" },
+            { word: "shirt", vowel: "ir", emoji: "👕" },
+            { word: "stir", vowel: "ir", emoji: "🥣" },
+            { word: "church", vowel: "ur", emoji: "⛪" },
+            { word: "purple", vowel: "ur", emoji: "🟪" },
+            { word: "surf", vowel: "ur", emoji: "🏄" },
+            { word: "yogurt", vowel: "ur", emoji: "🍦" },
+            { word: "store", vowel: "or", emoji: "🏪" },
+            { word: "horse", vowel: "or", emoji: "🐎" },
+            { word: "morning", vowel: "or", emoji: "🌅" },
+            { word: "forty", vowel: "or", emoji: "4️⃣0️⃣" },
+            { word: "orange", vowel: "or", emoji: "🍊" },
+            { word: "doorbell", vowel: "oor", emoji: "🛎️" },
+            { word: "outdoor", vowel: "oor", emoji: "🏕️" },
+            { word: "floor", vowel: "oor", emoji: "🪵" },
+            { word: "moor", vowel: "oor", emoji: "🌾" },
+            { word: "poor", vowel: "oor", emoji: "🪙" }
+        ];
+
+        let allMasterQuestions = []; 
+        let currentPlayQueue = [];   
+        let teams = [];
+        let lastScoredIndex = -1;
+        let currentIndex = 0;
+        const VOWEL_OPTIONS = ["ar", "er", "ir", "ur", "or", "oor"];
+
+        function shuffleArray(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function saveData() {
+            try {
+                const dataToSave = {
+                    questions: allMasterQuestions,
+                    teamCount: document.getElementById('team-count').value,
+                    teams: teams
+                };
+                localStorage.setItem('phonicsAppData_v6', JSON.stringify(dataToSave));
+            } catch (e) {
+                console.warn("儲存失敗:", e);
+                alert("儲存空間已滿，部分圖片可能無法永久保留。");
+            }
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('phonicsAppData_v6');
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                allMasterQuestions = parsedData.questions || JSON.parse(JSON.stringify(defaultQuestions));
+                document.getElementById('team-count').value = parsedData.teamCount || 2;
+                if (parsedData.teams && parsedData.teams.length > 0) {
+                    teams = parsedData.teams;
+                } else {
+                    initTeamsData();
+                }
+            } else {
+                allMasterQuestions = JSON.parse(JSON.stringify(defaultQuestions));
+                initTeamsData();
+            }
+        }
+
+        function resetAllData() {
+            if(confirm("確定要清除所有上傳的圖片與設定紀錄，還原成預設狀態嗎？")) {
+                localStorage.removeItem('phonicsAppData_v6');
+                location.reload();
+            }
+        }
+
+        window.onload = function() {
+            loadData();
+        };
+
+        function showSetup() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('flex');
+            
+            const setup = document.getElementById('setup-screen');
+            setup.classList.remove('hidden');
+            setTimeout(() => setup.classList.remove('opacity-0'), 10); 
+        }
+
+        function startGame() {
+            initTeamsData(); 
+            renderScoreboard();
+            
+            const checkboxes = document.querySelectorAll('#mode-checkboxes input[type="checkbox"]:checked');
+            const selectedModes = Array.from(checkboxes).map(cb => cb.value);
+
+            if (selectedModes.length === 0) {
+                alert("請至少選擇一種母音特訓喔！");
+                return;
+            }
+
+            const filtered = allMasterQuestions.filter(q => selectedModes.includes(q.vowel));
+            currentPlayQueue = shuffleArray(filtered);
+            currentIndex = 0;
+            
+            loadQuestion();
+
+            const setup = document.getElementById('setup-screen');
+            setup.classList.add('opacity-0');
+            setTimeout(() => {
+                setup.classList.add('hidden');
+                document.getElementById('game-screen').classList.remove('hidden');
+                document.getElementById('game-screen').classList.add('flex');
+            }, 300); 
+        }
+
+        function initTeamsData() {
+            let count = parseInt(document.getElementById('team-count').value);
+            if (count < 1) count = 1;
+            if (count > 26) count = 26;
+            
+            if (teams.length !== count) {
+                teams = [];
+                lastScoredIndex = -1;
+                for(let i = 0; i < count; i++) {
+                    const teamName = "Team " + String.fromCharCode(65 + i);
+                    teams.push({ name: teamName, score: 0 });
+                }
+                saveData();
+            }
+        }
+
+        function addScore(teamIndex, points) {
+            teams[teamIndex].score += points;
+            lastScoredIndex = teamIndex;
+            renderScoreboard();
+            saveData();
+        }
+
+        function renderScoreboard() {
+            const board = document.getElementById('scoreboard');
+            board.innerHTML = '';
+            teams.forEach((team, index) => {
+                const isLastScored = (index === lastScoredIndex);
+                const cardClass = `bg-white rounded-2xl px-4 py-2 flex flex-row items-center justify-between border-4 min-w-[200px] max-w-[280px] shrink-0 ${isLastScored ? 'highlight-team z-10' : 'border-gray-200'} transition-all duration-300`;
+                const card = document.createElement('div');
+                card.className = cardClass;
+                card.innerHTML = `
+                    <div class="flex flex-col items-start leading-tight">
+                        <h3 class="font-bold text-sm text-gray-500">${team.name}</h3>
+                        <div class="text-3xl font-black text-blue-600">${team.score}</div>
+                    </div>
+                    <div class="flex flex-col gap-1 ml-4">
+                        <button onclick="addScore(${index}, 1)" class="bg-green-100 hover:bg-green-200 text-green-700 font-bold px-3 py-1 text-sm rounded-lg border border-green-300 transition-colors">+1</button>
+                        <button onclick="addScore(${index}, 5)" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold px-3 py-1 text-sm rounded-lg border border-yellow-300 transition-colors">+5</button>
+                    </div>
+                `;
+                board.appendChild(card);
+            });
+        }
+
+        // 【修改】：加入自動縮放字體邏輯，將字體從 300px 倍增至最大 600px！
+        function generateEmojiImage(emoji) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 800;
+            canvas.height = 800;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 800, 800);
+            
+            // 基礎字體大小放大兩倍到 600px
+            let fontSize = 600; 
+            ctx.font = fontSize + 'px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+            
+            // 防呆：如果組合 Emoji 太長超過畫布，自動縮小字體直到剛好塞滿
+            let metrics = ctx.measureText(emoji);
+            while (metrics.width > 750 && fontSize > 100) {
+                fontSize -= 20;
+                ctx.font = fontSize + 'px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+                metrics = ctx.measureText(emoji);
+            }
+            
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(emoji, 400, 440); 
+            return canvas.toDataURL('image/png');
+        }
+
+        function loadQuestion() {
+            if (currentPlayQueue.length === 0) return;
+            
+            if (currentIndex >= currentPlayQueue.length) {
+                alert("🎉 恭喜完成這回合所有單字！");
+                showSetup(); 
+                return;
+            }
+
+            const currentQ = currentPlayQueue[currentIndex];
+            const progress = ((currentIndex) / currentPlayQueue.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+
+            const imgElement = document.getElementById('question-img');
+            if (currentQ.img) {
+                imgElement.src = currentQ.img;
+            } else if (currentQ.emoji) {
+                imgElement.src = generateEmojiImage(currentQ.emoji);
+            } else {
+                imgElement.src = `https://loremflickr.com/1200/1200/${currentQ.word},object/all`;
+            }
+            
+            imgElement.onerror = function() {
+                this.src = `https://placehold.co/1200x1200/e2e8f0/475569?text=${currentQ.word}`;
+            };
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            VOWEL_OPTIONS.forEach(vowel => {
+                const btn = document.createElement('button');
+                btn.className = "btn-press text-7xl font-black text-blue-700 bg-blue-100 border-4 border-blue-200 hover:bg-blue-200 hover:border-blue-400 rounded-3xl shadow-sm transition-all duration-200 w-full h-full flex items-center justify-center";
+                btn.innerText = vowel;
+                btn.onclick = () => checkAnswer(vowel, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Image = e.target.result;
+                    const currentQ = currentPlayQueue[currentIndex];
+                    currentQ.img = base64Image;
+                    document.getElementById('question-img').src = base64Image;
+                    
+                    const masterIndex = allMasterQuestions.findIndex(q => q.word === currentQ.word);
+                    if(masterIndex !== -1) {
+                        allMasterQuestions[masterIndex].img = base64Image;
+                    }
+                    saveData();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function playQuestionAudio() {
+            const currentQ = currentPlayQueue[currentIndex];
+            const utterance = new SpeechSynthesisUtterance(currentQ.word);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8; 
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function checkAnswer(selectedVowel, btnElement) {
+            const currentQ = currentPlayQueue[currentIndex];
+            window.speechSynthesis.cancel(); 
+            
+            if (selectedVowel === currentQ.vowel) {
+                showFeedback(true, currentQ.word);
+            } else {
+                btnElement.classList.add('animate__animated', 'animate__headShake', 'bg-red-100', 'border-red-400', 'text-red-700');
+                
+                const bombSound = document.getElementById('bomb-sound');
+                bombSound.currentTime = 0; 
+                bombSound.play();
+
+                const koffingOverlay = document.getElementById('koffing-overlay');
+                koffingOverlay.classList.remove('hidden');
+
+                setTimeout(() => {
+                    koffingOverlay.classList.add('hidden');
+                    btnElement.classList.remove('animate__animated', 'animate__headShake', 'bg-red-100', 'border-red-400', 'text-red-700');
+                }, 1200); 
+            }
+        }
+
+        function showFeedback(isCorrect, word) {
+            const overlay = document.getElementById('feedback-overlay');
+            const wordDisplay = document.getElementById('feedback-word');
+            
+            wordDisplay.innerText = word;
+            overlay.classList.remove('hidden');
+
+            const yay = new SpeechSynthesisUtterance(word);
+            yay.lang = 'en-US';
+            yay.rate = 0.9;
+            window.speechSynthesis.speak(yay);
+
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                currentIndex++;
+                loadQuestion();
+            }, 1800);
+        }
+    </script>
+</body>
+</html>
