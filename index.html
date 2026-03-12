@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fun Phonics! 寶可夢特訓 (純淨大圖版)</title>
+    <title>Fun Phonics! 寶可夢特訓 (高亮防呆版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        /* 隱藏原生滾動條，保持畫面乾淨 */
         ::-webkit-scrollbar { height: 8px; width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        body { margin: 0; padding: 0; overflow: hidden; /* 強制不出現全域滾動條 */ }
+        body { margin: 0; padding: 0; overflow-x: hidden; background-color: #eff6ff;}
         .btn-press:active { transform: scale(0.95); }
         .highlight-team {
             box-shadow: 0 0 25px rgba(250, 204, 21, 1);
@@ -24,103 +23,106 @@
         input[type="checkbox"] { accent-color: #2563eb; }
     </style>
 </head>
-<body class="bg-blue-50 font-sans h-screen w-screen flex flex-col relative text-gray-800">
+<body class="font-sans min-h-screen w-full flex flex-col relative text-gray-800">
 
     <audio id="bomb-sound" src="https://www.myinstants.com/media/sounds/explosion.mp3" preload="auto"></audio>
 
-    <div id="setup-screen" class="absolute inset-0 z-40 bg-blue-50 flex items-center justify-center p-4 transition-opacity duration-500">
-        <div class="bg-white rounded-[3rem] shadow-2xl p-12 max-w-5xl w-full border-4 border-blue-200 text-center relative overflow-hidden">
+    <div id="setup-screen" class="absolute inset-0 z-40 bg-blue-50 flex items-center justify-center p-4 transition-opacity duration-500 overflow-y-auto">
+        <div class="bg-white rounded-[2rem] lg:rounded-[3rem] shadow-2xl p-6 lg:p-12 max-w-5xl w-full border-4 border-blue-200 text-center relative my-auto">
             
-            <h1 class="text-6xl font-black text-blue-600 mb-2 drop-shadow-sm">🎧 Phonics Challenge!</h1>
-            <p class="text-2xl text-gray-400 font-bold mb-10">R-Controlled Vowels</p>
+            <h1 class="text-4xl lg:text-6xl font-black text-blue-600 mb-2 drop-shadow-sm">🎧 Phonics Challenge!</h1>
+            <p class="text-xl lg:text-2xl text-gray-400 font-bold mb-8">R-Controlled Vowels</p>
             
-            <div class="bg-blue-50 rounded-3xl p-8 mb-8 border-2 border-blue-100">
-                <h2 class="text-3xl font-bold text-gray-700 mb-6">🎯 選擇本節課挑戰模式 (可複選)</h2>
-                <div class="flex flex-wrap justify-center gap-4" id="mode-checkboxes">
-                    <label class="cursor-pointer flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border-4 border-blue-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-black text-blue-800 text-3xl shadow-sm">
-                        <input type="checkbox" value="ar" checked class="w-8 h-8"> ar
+            <div class="bg-blue-50 rounded-2xl lg:rounded-3xl p-6 lg:p-8 mb-8 border-2 border-blue-100">
+                <h2 class="text-2xl lg:text-3xl font-bold text-gray-700 mb-6">🎯 選擇本節課挑戰模式 (可複選)</h2>
+                <div class="flex flex-wrap justify-center gap-3 lg:gap-4" id="mode-checkboxes">
+                    <label class="cursor-pointer flex items-center gap-2 lg:gap-3 bg-white px-4 py-3 lg:px-6 lg:py-4 rounded-xl lg:rounded-2xl border-4 border-blue-200 hover:border-blue-400 transition-all font-black text-blue-800 text-2xl lg:text-3xl shadow-sm">
+                        <input type="checkbox" value="ar" checked class="w-6 h-6 lg:w-8 lg:h-8"> ar
                     </label>
-                    <label class="cursor-pointer flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border-4 border-blue-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-black text-blue-800 text-3xl shadow-sm">
-                        <input type="checkbox" value="er" checked class="w-8 h-8"> er
+                    <label class="cursor-pointer flex items-center gap-2 lg:gap-3 bg-white px-4 py-3 lg:px-6 lg:py-4 rounded-xl lg:rounded-2xl border-4 border-blue-200 hover:border-blue-400 transition-all font-black text-blue-800 text-2xl lg:text-3xl shadow-sm">
+                        <input type="checkbox" value="er" checked class="w-6 h-6 lg:w-8 lg:h-8"> er
                     </label>
-                    <label class="cursor-pointer flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border-4 border-blue-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-black text-blue-800 text-3xl shadow-sm">
-                        <input type="checkbox" value="ir" checked class="w-8 h-8"> ir
+                    <label class="cursor-pointer flex items-center gap-2 lg:gap-3 bg-white px-4 py-3 lg:px-6 lg:py-4 rounded-xl lg:rounded-2xl border-4 border-blue-200 hover:border-blue-400 transition-all font-black text-blue-800 text-2xl lg:text-3xl shadow-sm">
+                        <input type="checkbox" value="ir" checked class="w-6 h-6 lg:w-8 lg:h-8"> ir
                     </label>
-                    <label class="cursor-pointer flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border-4 border-blue-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-black text-blue-800 text-3xl shadow-sm">
-                        <input type="checkbox" value="ur" checked class="w-8 h-8"> ur
+                    <label class="cursor-pointer flex items-center gap-2 lg:gap-3 bg-white px-4 py-3 lg:px-6 lg:py-4 rounded-xl lg:rounded-2xl border-4 border-blue-200 hover:border-blue-400 transition-all font-black text-blue-800 text-2xl lg:text-3xl shadow-sm">
+                        <input type="checkbox" value="ur" checked class="w-6 h-6 lg:w-8 lg:h-8"> ur
                     </label>
-                    <label class="cursor-pointer flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border-4 border-blue-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-black text-blue-800 text-3xl shadow-sm">
-                        <input type="checkbox" value="or" checked class="w-8 h-8"> or
+                    <label class="cursor-pointer flex items-center gap-2 lg:gap-3 bg-white px-4 py-3 lg:px-6 lg:py-4 rounded-xl lg:rounded-2xl border-4 border-blue-200 hover:border-blue-400 transition-all font-black text-blue-800 text-2xl lg:text-3xl shadow-sm">
+                        <input type="checkbox" value="or" checked class="w-6 h-6 lg:w-8 lg:h-8"> or
                     </label>
-                    <label class="cursor-pointer flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border-4 border-blue-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-black text-blue-800 text-3xl shadow-sm">
-                        <input type="checkbox" value="oor" checked class="w-8 h-8"> oor
+                    <label class="cursor-pointer flex items-center gap-2 lg:gap-3 bg-white px-4 py-3 lg:px-6 lg:py-4 rounded-xl lg:rounded-2xl border-4 border-blue-200 hover:border-blue-400 transition-all font-black text-blue-800 text-2xl lg:text-3xl shadow-sm">
+                        <input type="checkbox" value="oor" checked class="w-6 h-6 lg:w-8 lg:h-8"> oor
                     </label>
                 </div>
             </div>
 
-            <div class="flex items-center justify-center gap-6 mb-10">
-                <label class="text-2xl font-bold text-gray-700">參與組別數 (1-26):</label>
-                <input type="number" id="team-count" min="1" max="26" value="2" class="border-4 border-gray-300 rounded-2xl px-4 py-2 w-28 text-center text-3xl font-bold focus:border-blue-500 focus:outline-none">
+            <div class="flex flex-col md:flex-row items-center justify-center gap-4 lg:gap-6 mb-8">
+                <label class="text-xl lg:text-2xl font-bold text-gray-700">參與組別數 (1-26):</label>
+                <input type="number" id="team-count" min="1" max="26" value="2" class="border-4 border-gray-300 rounded-xl px-4 py-2 w-24 text-center text-2xl font-bold focus:border-blue-500 focus:outline-none">
             </div>
 
-            <div class="flex justify-center gap-6">
-                <button onclick="resetAllData()" class="bg-gray-200 hover:bg-red-500 hover:text-white text-gray-600 font-bold py-4 px-8 rounded-full transition-colors text-xl">
+            <div class="flex flex-col md:flex-row justify-center gap-4 lg:gap-6">
+                <button onclick="resetAllData()" class="bg-gray-200 hover:bg-red-500 hover:text-white text-gray-600 font-bold py-3 px-6 lg:py-4 lg:px-8 rounded-full transition-colors text-lg lg:text-xl">
                     清除所有紀錄
                 </button>
-                <button onclick="startGame()" class="btn-press bg-green-500 hover:bg-green-600 text-white font-black py-4 px-16 rounded-full shadow-lg transition-transform text-3xl">
+                <button onclick="startGame()" class="btn-press bg-green-500 hover:bg-green-600 text-white font-black py-3 px-10 lg:py-4 lg:px-16 rounded-full shadow-lg transition-transform text-2xl lg:text-3xl">
                     🚀 開始挑戰 !
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="game-screen" class="hidden flex-col h-full w-full p-4 gap-4">
+    <div id="game-screen" class="hidden flex-col h-screen w-full p-2 lg:p-4 gap-2 lg:gap-4 overflow-hidden">
         
-        <div class="flex items-center justify-between w-full shrink-0 gap-4">
-            <button onclick="showSetup()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-xl shadow-sm shrink-0 flex items-center gap-2">
+        <div class="flex items-center justify-between w-full shrink-0 gap-2 lg:gap-4">
+            <button onclick="showSetup()" class="bg-white/80 hover:bg-white text-gray-700 font-bold py-2 px-3 lg:px-4 rounded-xl shadow-sm shrink-0 flex items-center gap-2 border border-gray-200">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                設定
+                <span class="hidden sm:inline">設定</span>
             </button>
             
-            <div id="scoreboard" class="flex-1 flex overflow-x-auto gap-3 pb-2 pt-1 px-1">
+            <div id="scoreboard" class="flex-1 flex overflow-x-auto gap-2 lg:gap-3 pb-2 pt-1 px-1">
                 </div>
         </div>
 
-        <div class="w-full bg-gray-200 rounded-full h-3 shrink-0">
-            <div id="progress-bar" class="bg-green-400 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+        <div class="w-full shrink-0 flex items-center gap-4 px-2 lg:px-6">
+            <div class="flex-1 bg-gray-200 rounded-full h-3 lg:h-4 relative">
+                <div id="progress-bar" class="bg-green-400 h-3 lg:h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <div id="progress-text" class="text-gray-500 font-black text-lg lg:text-2xl shrink-0 w-24 text-right">0 / 0</div>
         </div>
 
-        <div class="flex-1 min-h-0 flex flex-row gap-8 items-center justify-center bg-white rounded-[2rem] shadow-xl border-4 border-blue-200 p-6 relative">
+        <div class="flex-1 min-h-0 flex flex-col lg:flex-row gap-4 lg:gap-8 items-center justify-center bg-white rounded-2xl lg:rounded-[2rem] shadow-xl border-2 lg:border-4 border-blue-200 p-4 lg:p-6 relative overflow-y-auto lg:overflow-hidden w-full">
             
-            <div class="w-1/2 h-full flex flex-col items-center justify-center shrink-0">
-                <div class="relative flex-1 min-h-0 w-full flex justify-center items-center mb-6">
-                    <img id="question-img" class="max-h-full aspect-square object-cover rounded-3xl" src="" alt="Question Image">
+            <div class="w-full lg:w-1/2 h-auto lg:h-full flex flex-col items-center justify-center shrink-0 gap-4 lg:gap-6">
+                <div class="relative w-full max-w-[40vh] lg:max-w-full flex-1 min-h-0 flex justify-center items-center">
+                    <img id="question-img" class="w-full h-auto lg:h-full lg:w-auto aspect-square object-contain rounded-2xl lg:rounded-3xl" src="" alt="Question Image">
                     
                     <input type="file" id="file-upload" class="hidden" accept="image/*" onchange="handleImageUpload(event)">
                     
-                    <button onclick="document.getElementById('file-upload').click()" class="absolute bottom-4 right-[10%] bg-white/90 hover:bg-white text-gray-700 font-bold py-3 px-6 rounded-2xl flex items-center justify-center gap-2 border border-gray-300 shadow-lg backdrop-blur-sm transition-transform hover:scale-105">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        自訂圖片
+                    <button onclick="document.getElementById('file-upload').click()" class="absolute bottom-2 right-2 lg:bottom-4 lg:right-[10%] bg-white/90 hover:bg-white text-gray-700 font-bold p-2 lg:py-3 lg:px-6 rounded-xl lg:rounded-2xl flex items-center justify-center gap-1 lg:gap-2 border border-gray-300 shadow-lg backdrop-blur-sm transition-transform hover:scale-105">
+                        <svg class="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <span class="text-xs lg:text-base hidden sm:inline">自訂</span>
                     </button>
                 </div>
 
-                <button id="play-btn" onclick="playQuestionAudio()" class="btn-press bg-yellow-400 hover:bg-yellow-500 text-yellow-900 py-6 rounded-full shadow-lg flex items-center justify-center transition-colors w-[80%] shrink-0">
-                    <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd"></path></svg>
+                <button id="play-btn" onclick="playQuestionAudio()" class="btn-press bg-yellow-400 hover:bg-yellow-500 text-yellow-900 p-4 lg:p-6 rounded-full shadow-lg flex items-center justify-center transition-colors">
+                    <svg class="w-16 h-16 lg:w-24 lg:h-24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd"></path></svg>
                 </button>
             </div>
 
-            <div id="options-container" class="w-1/2 h-full grid grid-cols-2 gap-6">
+            <div id="options-container" class="w-full lg:w-1/2 flex-1 grid grid-cols-2 gap-3 lg:gap-6 min-h-[250px] lg:min-h-0">
                 </div>
             
-            <div id="feedback-overlay" class="hidden absolute inset-0 bg-white/95 flex items-center justify-center z-20 flex-col rounded-[2rem]">
-                <p id="feedback-word" class="font-black text-blue-600 animate__animated animate__zoomIn drop-shadow-md tracking-widest lowercase" style="font-size: 16vw;"></p>
+            <div id="feedback-overlay" class="hidden absolute inset-0 bg-white/95 flex items-center justify-center z-20 flex-col rounded-2xl lg:rounded-[2rem]">
+                <p id="feedback-word" class="font-black text-blue-600 animate__animated animate__zoomIn drop-shadow-md tracking-widest lowercase text-[15vw] lg:text-[10vw]"></p>
             </div>
         </div>
 
     </div>
 
-    <div id="koffing-overlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm">
-        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/109.png" class="w-[40vw] h-[40vw] animate__animated animate__zoomIn" alt="瓦斯彈">
+    <div id="koffing-overlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/109.png" class="w-64 h-64 lg:w-[40vw] lg:h-[40vw] animate__animated animate__zoomIn" alt="瓦斯彈">
     </div>
 
     <script>
@@ -165,6 +167,10 @@
         let teams = [];
         let lastScoredIndex = -1;
         let currentIndex = 0;
+        
+        // 【新增防呆機制】：用來鎖定動畫期間的按鈕操作
+        let isAnimating = false; 
+
         const VOWEL_OPTIONS = ["ar", "er", "ir", "ur", "or", "oor"];
 
         function shuffleArray(array) {
@@ -184,7 +190,7 @@
                     teamCount: document.getElementById('team-count').value,
                     teams: teams
                 };
-                localStorage.setItem('phonicsAppData_v6', JSON.stringify(dataToSave));
+                localStorage.setItem('phonicsAppData_v8', JSON.stringify(dataToSave));
             } catch (e) {
                 console.warn("儲存失敗:", e);
                 alert("儲存空間已滿，部分圖片可能無法永久保留。");
@@ -192,7 +198,7 @@
         }
 
         function loadData() {
-            const savedData = localStorage.getItem('phonicsAppData_v6');
+            const savedData = localStorage.getItem('phonicsAppData_v8');
             if (savedData) {
                 const parsedData = JSON.parse(savedData);
                 allMasterQuestions = parsedData.questions || JSON.parse(JSON.stringify(defaultQuestions));
@@ -210,7 +216,7 @@
 
         function resetAllData() {
             if(confirm("確定要清除所有上傳的圖片與設定紀錄，還原成預設狀態嗎？")) {
-                localStorage.removeItem('phonicsAppData_v6');
+                localStorage.removeItem('phonicsAppData_v8');
                 location.reload();
             }
         }
@@ -243,6 +249,7 @@
             const filtered = allMasterQuestions.filter(q => selectedModes.includes(q.vowel));
             currentPlayQueue = shuffleArray(filtered);
             currentIndex = 0;
+            isAnimating = false; // 重設防呆狀態
             
             loadQuestion();
 
@@ -283,38 +290,35 @@
             board.innerHTML = '';
             teams.forEach((team, index) => {
                 const isLastScored = (index === lastScoredIndex);
-                const cardClass = `bg-white rounded-2xl px-4 py-2 flex flex-row items-center justify-between border-4 min-w-[200px] max-w-[280px] shrink-0 ${isLastScored ? 'highlight-team z-10' : 'border-gray-200'} transition-all duration-300`;
+                const cardClass = `bg-white rounded-xl lg:rounded-2xl px-3 py-1 lg:px-4 lg:py-2 flex flex-row items-center justify-between border-2 lg:border-4 min-w-[160px] lg:min-w-[200px] max-w-[280px] shrink-0 ${isLastScored ? 'highlight-team z-10' : 'border-gray-200'} transition-all duration-300`;
                 const card = document.createElement('div');
                 card.className = cardClass;
                 card.innerHTML = `
                     <div class="flex flex-col items-start leading-tight">
-                        <h3 class="font-bold text-sm text-gray-500">${team.name}</h3>
-                        <div class="text-3xl font-black text-blue-600">${team.score}</div>
+                        <h3 class="font-bold text-xs lg:text-sm text-gray-500">${team.name}</h3>
+                        <div class="text-2xl lg:text-3xl font-black text-blue-600">${team.score}</div>
                     </div>
-                    <div class="flex flex-col gap-1 ml-4">
-                        <button onclick="addScore(${index}, 1)" class="bg-green-100 hover:bg-green-200 text-green-700 font-bold px-3 py-1 text-sm rounded-lg border border-green-300 transition-colors">+1</button>
-                        <button onclick="addScore(${index}, 5)" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold px-3 py-1 text-sm rounded-lg border border-yellow-300 transition-colors">+5</button>
+                    <div class="flex flex-col gap-1 ml-2 lg:ml-4">
+                        <button onclick="addScore(${index}, 1)" class="bg-green-100 hover:bg-green-200 text-green-700 font-bold px-2 py-0.5 lg:px-3 lg:py-1 text-xs lg:text-sm rounded border border-green-300 transition-colors">+1</button>
+                        <button onclick="addScore(${index}, 5)" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold px-2 py-0.5 lg:px-3 lg:py-1 text-xs lg:text-sm rounded border border-yellow-300 transition-colors">+5</button>
                     </div>
                 `;
                 board.appendChild(card);
             });
         }
 
-        // 【修改】：加入自動縮放字體邏輯，將字體從 300px 倍增至最大 600px！
         function generateEmojiImage(emoji) {
             const canvas = document.createElement('canvas');
-            canvas.width = 800;
-            canvas.height = 800;
+            canvas.width = 1000;
+            canvas.height = 1000;
             const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, 800, 800);
+            ctx.clearRect(0, 0, 1000, 1000);
             
-            // 基礎字體大小放大兩倍到 600px
-            let fontSize = 600; 
+            let fontSize = 800; 
             ctx.font = fontSize + 'px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
             
-            // 防呆：如果組合 Emoji 太長超過畫布，自動縮小字體直到剛好塞滿
             let metrics = ctx.measureText(emoji);
-            while (metrics.width > 750 && fontSize > 100) {
+            while (metrics.width > 900 && fontSize > 100) {
                 fontSize -= 20;
                 ctx.font = fontSize + 'px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
                 metrics = ctx.measureText(emoji);
@@ -322,7 +326,7 @@
             
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(emoji, 400, 440); 
+            ctx.fillText(emoji, 500, 550); 
             return canvas.toDataURL('image/png');
         }
 
@@ -336,8 +340,11 @@
             }
 
             const currentQ = currentPlayQueue[currentIndex];
-            const progress = ((currentIndex) / currentPlayQueue.length) * 100;
+            
+            // 【進度條與數字更新】
+            const progress = ((currentIndex + 1) / currentPlayQueue.length) * 100;
             document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('progress-text').innerText = `${currentIndex + 1} / ${currentPlayQueue.length}`;
 
             const imgElement = document.getElementById('question-img');
             if (currentQ.img) {
@@ -357,7 +364,7 @@
             
             VOWEL_OPTIONS.forEach(vowel => {
                 const btn = document.createElement('button');
-                btn.className = "btn-press text-7xl font-black text-blue-700 bg-blue-100 border-4 border-blue-200 hover:bg-blue-200 hover:border-blue-400 rounded-3xl shadow-sm transition-all duration-200 w-full h-full flex items-center justify-center";
+                btn.className = "btn-press text-5xl lg:text-7xl font-black text-blue-700 bg-blue-100 border-2 lg:border-4 border-blue-200 hover:bg-blue-200 hover:border-blue-400 rounded-2xl lg:rounded-3xl shadow-sm transition-all duration-200 w-full h-full flex items-center justify-center min-h-[80px]";
                 btn.innerText = vowel;
                 btn.onclick = () => checkAnswer(vowel, btn);
                 container.appendChild(btn);
@@ -392,34 +399,54 @@
             window.speechSynthesis.speak(utterance);
         }
 
+        // ==========================================
+        // 【核心邏輯更新】：答題檢驗與動畫鎖定防呆機制
+        // ==========================================
         function checkAnswer(selectedVowel, btnElement) {
+            // 如果正在播放動畫（瓦斯彈或過關文字），強制無效化所有點擊，防止干擾
+            if (isAnimating) return; 
+
             const currentQ = currentPlayQueue[currentIndex];
             window.speechSynthesis.cancel(); 
             
             if (selectedVowel === currentQ.vowel) {
-                showFeedback(true, currentQ.word);
+                isAnimating = true; // 鎖定狀態：答對準備換題
+                // 傳入三個參數，讓回饋函式知道「目標字根」是誰
+                showFeedback(true, currentQ.word, currentQ.vowel);
             } else {
+                isAnimating = true; // 鎖定狀態：開始懲罰動畫
+                
                 btnElement.classList.add('animate__animated', 'animate__headShake', 'bg-red-100', 'border-red-400', 'text-red-700');
                 
                 const bombSound = document.getElementById('bomb-sound');
+                bombSound.volume = 0.2; 
                 bombSound.currentTime = 0; 
                 bombSound.play();
 
                 const koffingOverlay = document.getElementById('koffing-overlay');
                 koffingOverlay.classList.remove('hidden');
 
+                // 延長至 1.5 秒後才允許再次作答
                 setTimeout(() => {
                     koffingOverlay.classList.add('hidden');
                     btnElement.classList.remove('animate__animated', 'animate__headShake', 'bg-red-100', 'border-red-400', 'text-red-700');
-                }, 1200); 
+                    isAnimating = false; // 解除鎖定！
+                }, 1500); 
             }
         }
 
-        function showFeedback(isCorrect, word) {
+        // ==========================================
+        // 【核心邏輯更新】：字根高亮 (Highlight Target Vowel)
+        // ==========================================
+        function showFeedback(isCorrect, word, targetVowel) {
             const overlay = document.getElementById('feedback-overlay');
             const wordDisplay = document.getElementById('feedback-word');
             
-            wordDisplay.innerText = word;
+            // 使用 replace 方法，將單字中的目標字根，替換為帶有紅色 CSS 屬性的 HTML 碼
+            const highlightedWord = word.replace(targetVowel, `<span class="text-red-500">${targetVowel}</span>`);
+            
+            // 這裡必須改用 innerHTML，這樣 <span> 標籤才會生效變色
+            wordDisplay.innerHTML = highlightedWord;
             overlay.classList.remove('hidden');
 
             const yay = new SpeechSynthesisUtterance(word);
@@ -430,6 +457,7 @@
             setTimeout(() => {
                 overlay.classList.add('hidden');
                 currentIndex++;
+                isAnimating = false; // 換題完成，解除鎖定！
                 loadQuestion();
             }, 1800);
         }
