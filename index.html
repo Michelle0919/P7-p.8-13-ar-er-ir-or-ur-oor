@@ -3,10 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fun Phonics! 寶可夢特訓 (高亮防呆版)</title>
+    <title>Fun Phonics! 寶可夢特訓 (OpenMoji 完整版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
+        /* 載入 OpenMoji 彩色字體 */
+        @font-face {
+            font-family: 'OpenMoji';
+            src: url('https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/font/OpenMoji-Color.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+        .openmoji-font {
+            font-family: 'OpenMoji', "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
+        }
+
         ::-webkit-scrollbar { height: 8px; width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -21,6 +32,23 @@
             transition: all 0.3s ease;
         }
         input[type="checkbox"] { accent-color: #2563eb; }
+
+        /* 輪盤兩側的漸層遮罩效果 */
+        .mask-gradient {
+            -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+            mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+        }
+
+        /* 寶可夢彈出放大動畫 */
+        .pop-out-effect {
+            animation: popOut 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+        
+        @keyframes popOut {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body class="font-sans min-h-screen w-full flex flex-col relative text-gray-800">
@@ -82,7 +110,7 @@
             </button>
             
             <div id="scoreboard" class="flex-1 flex overflow-x-auto gap-2 lg:gap-3 pb-2 pt-1 px-1">
-                </div>
+            </div>
         </div>
 
         <div class="w-full shrink-0 flex items-center gap-4 px-2 lg:px-6">
@@ -96,7 +124,9 @@
             
             <div class="w-full lg:w-1/2 h-auto lg:h-full flex flex-col items-center justify-center shrink-0 gap-4 lg:gap-6">
                 <div class="relative w-full max-w-[40vh] lg:max-w-full flex-1 min-h-0 flex justify-center items-center">
-                    <img id="question-img" class="w-full h-auto lg:h-full lg:w-auto aspect-square object-contain rounded-2xl lg:rounded-3xl" src="" alt="Question Image">
+                    
+                    <img id="question-img" class="hidden w-full h-auto lg:h-full lg:w-auto aspect-square object-contain rounded-2xl lg:rounded-3xl" src="" alt="Question Image">
+                    <div id="emoji-display" class="hidden w-full h-auto lg:h-full lg:w-auto aspect-square flex items-center justify-center text-[25vh] lg:text-[25vw] openmoji-font leading-none drop-shadow-md"></div>
                     
                     <input type="file" id="file-upload" class="hidden" accept="image/*" onchange="handleImageUpload(event)">
                     
@@ -112,20 +142,37 @@
             </div>
 
             <div id="options-container" class="w-full lg:w-1/2 flex-1 grid grid-cols-2 gap-3 lg:gap-6 min-h-[250px] lg:min-h-0">
-                </div>
+            </div>
             
             <div id="feedback-overlay" class="hidden absolute inset-0 bg-white/95 flex items-center justify-center z-20 flex-col rounded-2xl lg:rounded-[2rem]">
                 <p id="feedback-word" class="font-black text-blue-600 animate__animated animate__zoomIn drop-shadow-md tracking-widest lowercase text-[15vw] lg:text-[10vw]"></p>
             </div>
         </div>
-
     </div>
 
     <div id="koffing-overlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity">
         <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/109.png" class="w-64 h-64 lg:w-[40vw] lg:h-[40vw] animate__animated animate__zoomIn" alt="瓦斯彈">
     </div>
 
+    <div id="pokemon-gacha-overlay" class="hidden fixed inset-0 bg-gray-900/95 flex flex-col items-center justify-center z-[60] overflow-hidden">
+        <h2 id="gacha-title" class="text-white text-3xl md:text-5xl font-bold mb-8 animate__animated animate__fadeInDown tracking-wider">✨ 洛托姆尋找寶可夢中...</h2>
+        
+        <div id="gacha-track-container" class="relative w-full h-80 overflow-hidden mask-gradient transition-opacity duration-300">
+            <div id="gacha-track" class="absolute top-1/2 left-1/2 flex items-center gap-4 will-change-transform" style="transform: translate(-96px, -50%);">
+            </div>
+        </div>
+
+        <div id="gacha-result" class="mt-4 text-center hidden flex-col items-center justify-center w-full z-30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <img id="gacha-result-img" src="" class="w-72 h-72 md:w-[28rem] md:h-[28rem] object-contain pop-out-effect drop-shadow-[0_20px_20px_rgba(250,204,21,0.6)]" />
+            <p id="gacha-pokemon-name" class="text-5xl font-black text-yellow-400 tracking-widest uppercase drop-shadow-[0_0_15px_rgba(250,204,21,0.8)] mt-4 mb-8 animate__animated animate__fadeInUp"></p>
+            <button onclick="finishGacha()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-12 rounded-full transition-colors text-2xl shadow-[0_0_15px_rgba(37,99,235,0.8)] animate__animated animate__fadeInUp btn-press border-4 border-blue-400">
+                繼續挑戰 🚀
+            </button>
+        </div>
+    </div>
+
     <script>
+        // 包含全新擴充單字庫與 OpenMoji 適配
         const defaultQuestions = [
             { word: "bird",   vowel: "ir", emoji: "🐦" },
             { word: "nurse",  vowel: "ur", emoji: "👩‍⚕️" },
@@ -159,7 +206,10 @@
             { word: "outdoor", vowel: "oor", emoji: "🏕️" },
             { word: "floor", vowel: "oor", emoji: "🪵" },
             { word: "moor", vowel: "oor", emoji: "🌾" },
-            { word: "poor", vowel: "oor", emoji: "🪙" }
+            { word: "poor", vowel: "oor", emoji: "🪙" },
+            { word: "girl",   vowel: "ir", emoji: "👧" },
+            { word: "skirt",  vowel: "ir", emoji: "👗" },
+            { word: "purse",  vowel: "ur", emoji: "👛" }
         ];
 
         let allMasterQuestions = []; 
@@ -167,9 +217,8 @@
         let teams = [];
         let lastScoredIndex = -1;
         let currentIndex = 0;
-        
-        // 【新增防呆機制】：用來鎖定動畫期間的按鈕操作
         let isAnimating = false; 
+        let currentWinnerData = null; 
 
         const VOWEL_OPTIONS = ["ar", "er", "ir", "ur", "or", "oor"];
 
@@ -190,15 +239,14 @@
                     teamCount: document.getElementById('team-count').value,
                     teams: teams
                 };
-                localStorage.setItem('phonicsAppData_v8', JSON.stringify(dataToSave));
+                localStorage.setItem('phonicsAppData_v12', JSON.stringify(dataToSave));
             } catch (e) {
                 console.warn("儲存失敗:", e);
-                alert("儲存空間已滿，部分圖片可能無法永久保留。");
             }
         }
 
         function loadData() {
-            const savedData = localStorage.getItem('phonicsAppData_v8');
+            const savedData = localStorage.getItem('phonicsAppData_v12');
             if (savedData) {
                 const parsedData = JSON.parse(savedData);
                 allMasterQuestions = parsedData.questions || JSON.parse(JSON.stringify(defaultQuestions));
@@ -216,7 +264,7 @@
 
         function resetAllData() {
             if(confirm("確定要清除所有上傳的圖片與設定紀錄，還原成預設狀態嗎？")) {
-                localStorage.removeItem('phonicsAppData_v8');
+                localStorage.removeItem('phonicsAppData_v12');
                 location.reload();
             }
         }
@@ -228,7 +276,6 @@
         function showSetup() {
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('flex');
-            
             const setup = document.getElementById('setup-screen');
             setup.classList.remove('hidden');
             setTimeout(() => setup.classList.remove('opacity-0'), 10); 
@@ -249,7 +296,7 @@
             const filtered = allMasterQuestions.filter(q => selectedModes.includes(q.vowel));
             currentPlayQueue = shuffleArray(filtered);
             currentIndex = 0;
-            isAnimating = false; // 重設防呆狀態
+            isAnimating = false;
             
             loadQuestion();
 
@@ -290,6 +337,7 @@
             board.innerHTML = '';
             teams.forEach((team, index) => {
                 const isLastScored = (index === lastScoredIndex);
+                
                 const cardClass = `bg-white rounded-xl lg:rounded-2xl px-3 py-1 lg:px-4 lg:py-2 flex flex-row items-center justify-between border-2 lg:border-4 min-w-[160px] lg:min-w-[200px] max-w-[280px] shrink-0 ${isLastScored ? 'highlight-team z-10' : 'border-gray-200'} transition-all duration-300`;
                 const card = document.createElement('div');
                 card.className = cardClass;
@@ -307,29 +355,6 @@
             });
         }
 
-        function generateEmojiImage(emoji) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 1000;
-            canvas.height = 1000;
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, 1000, 1000);
-            
-            let fontSize = 800; 
-            ctx.font = fontSize + 'px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
-            
-            let metrics = ctx.measureText(emoji);
-            while (metrics.width > 900 && fontSize > 100) {
-                fontSize -= 20;
-                ctx.font = fontSize + 'px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
-                metrics = ctx.measureText(emoji);
-            }
-            
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(emoji, 500, 550); 
-            return canvas.toDataURL('image/png');
-        }
-
         function loadQuestion() {
             if (currentPlayQueue.length === 0) return;
             
@@ -340,28 +365,37 @@
             }
 
             const currentQ = currentPlayQueue[currentIndex];
-            
-            // 【進度條與數字更新】
             const progress = ((currentIndex + 1) / currentPlayQueue.length) * 100;
             document.getElementById('progress-bar').style.width = `${progress}%`;
             document.getElementById('progress-text').innerText = `${currentIndex + 1} / ${currentPlayQueue.length}`;
 
+            // --- OpenMoji 顯示邏輯更新 ---
             const imgElement = document.getElementById('question-img');
+            const emojiElement = document.getElementById('emoji-display');
+
             if (currentQ.img) {
+                // 如果是使用者上傳的自訂圖片
                 imgElement.src = currentQ.img;
+                imgElement.classList.remove('hidden');
+                emojiElement.classList.add('hidden');
             } else if (currentQ.emoji) {
-                imgElement.src = generateEmojiImage(currentQ.emoji);
+                // 如果有設定 emoji，直接使用 OpenMoji WebFont 渲染字元
+                emojiElement.innerText = currentQ.emoji;
+                emojiElement.classList.remove('hidden');
+                imgElement.classList.add('hidden');
             } else {
+                // 防呆，沒設定就去抓隨機圖
                 imgElement.src = `https://loremflickr.com/1200/1200/${currentQ.word},object/all`;
+                imgElement.classList.remove('hidden');
+                emojiElement.classList.add('hidden');
             }
-            
+
             imgElement.onerror = function() {
                 this.src = `https://placehold.co/1200x1200/e2e8f0/475569?text=${currentQ.word}`;
             };
 
             const container = document.getElementById('options-container');
             container.innerHTML = '';
-            
             VOWEL_OPTIONS.forEach(vowel => {
                 const btn = document.createElement('button');
                 btn.className = "btn-press text-5xl lg:text-7xl font-black text-blue-700 bg-blue-100 border-2 lg:border-4 border-blue-200 hover:bg-blue-200 hover:border-blue-400 rounded-2xl lg:rounded-3xl shadow-sm transition-all duration-200 w-full h-full flex items-center justify-center min-h-[80px]";
@@ -379,7 +413,11 @@
                     const base64Image = e.target.result;
                     const currentQ = currentPlayQueue[currentIndex];
                     currentQ.img = base64Image;
+                    
+                    // 上傳後切換回圖片顯示
                     document.getElementById('question-img').src = base64Image;
+                    document.getElementById('question-img').classList.remove('hidden');
+                    document.getElementById('emoji-display').classList.add('hidden');
                     
                     const masterIndex = allMasterQuestions.findIndex(q => q.word === currentQ.word);
                     if(masterIndex !== -1) {
@@ -399,53 +437,38 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // ==========================================
-        // 【核心邏輯更新】：答題檢驗與動畫鎖定防呆機制
-        // ==========================================
         function checkAnswer(selectedVowel, btnElement) {
-            // 如果正在播放動畫（瓦斯彈或過關文字），強制無效化所有點擊，防止干擾
             if (isAnimating) return; 
 
             const currentQ = currentPlayQueue[currentIndex];
             window.speechSynthesis.cancel(); 
             
             if (selectedVowel === currentQ.vowel) {
-                isAnimating = true; // 鎖定狀態：答對準備換題
-                // 傳入三個參數，讓回饋函式知道「目標字根」是誰
+                isAnimating = true; 
                 showFeedback(true, currentQ.word, currentQ.vowel);
             } else {
-                isAnimating = true; // 鎖定狀態：開始懲罰動畫
-                
+                isAnimating = true; 
                 btnElement.classList.add('animate__animated', 'animate__headShake', 'bg-red-100', 'border-red-400', 'text-red-700');
-                
                 const bombSound = document.getElementById('bomb-sound');
                 bombSound.volume = 0.2; 
                 bombSound.currentTime = 0; 
                 bombSound.play();
-
                 const koffingOverlay = document.getElementById('koffing-overlay');
                 koffingOverlay.classList.remove('hidden');
 
-                // 延長至 1.5 秒後才允許再次作答
                 setTimeout(() => {
                     koffingOverlay.classList.add('hidden');
                     btnElement.classList.remove('animate__animated', 'animate__headShake', 'bg-red-100', 'border-red-400', 'text-red-700');
-                    isAnimating = false; // 解除鎖定！
+                    isAnimating = false; 
                 }, 1500); 
             }
         }
 
-        // ==========================================
-        // 【核心邏輯更新】：字根高亮 (Highlight Target Vowel)
-        // ==========================================
         function showFeedback(isCorrect, word, targetVowel) {
             const overlay = document.getElementById('feedback-overlay');
             const wordDisplay = document.getElementById('feedback-word');
-            
-            // 使用 replace 方法，將單字中的目標字根，替換為帶有紅色 CSS 屬性的 HTML 碼
             const highlightedWord = word.replace(targetVowel, `<span class="text-red-500">${targetVowel}</span>`);
             
-            // 這裡必須改用 innerHTML，這樣 <span> 標籤才會生效變色
             wordDisplay.innerHTML = highlightedWord;
             overlay.classList.remove('hidden');
 
@@ -456,10 +479,102 @@
 
             setTimeout(() => {
                 overlay.classList.add('hidden');
-                currentIndex++;
-                isAnimating = false; // 換題完成，解除鎖定！
-                loadQuestion();
+                triggerPokemonGacha();
             }, 1800);
+        }
+
+        async function triggerPokemonGacha() {
+            const overlay = document.getElementById('pokemon-gacha-overlay');
+            const trackContainer = document.getElementById('gacha-track-container');
+            const track = document.getElementById('gacha-track');
+            const resultDiv = document.getElementById('gacha-result');
+            const title = document.getElementById('gacha-title');
+            
+            resultDiv.classList.add('hidden');
+            resultDiv.classList.remove('flex');
+            trackContainer.classList.remove('hidden', 'opacity-0');
+            title.innerText = "✨ 洛托姆尋找寶可夢中...";
+            
+            track.style.transition = 'none';
+            track.style.transform = 'translate(-96px, -50%)'; 
+            track.innerHTML = '';
+            overlay.classList.remove('hidden');
+
+            const targetIndex = 20; 
+            const totalCards = targetIndex + 3; 
+
+            let winnerId;
+            const randomProbability = Math.random();
+            if (randomProbability < 0.8) {
+                winnerId = Math.floor(Math.random() * 386) + 1;
+            } else {
+                winnerId = Math.floor(Math.random() * (1025 - 386)) + 387;
+            }
+            
+            try {
+                const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${winnerId}`);
+                const data = await res.json();
+                currentWinnerData = {
+                    id: data.id,
+                    name: data.name,
+                    sprite: data.sprites.other['official-artwork'].front_default || `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${winnerId}.png`
+                };
+            } catch(e) {
+                currentWinnerData = { id: 25, name: 'pikachu', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png' };
+            }
+
+            for (let i = 0; i < totalCards; i++) {
+                let id = Math.floor(Math.random() * 1025) + 1;
+                let imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+                
+                if (i === targetIndex) {
+                    imgUrl = currentWinnerData.sprite; 
+                }
+
+                const card = document.createElement('div');
+                card.className = "w-48 h-56 shrink-0 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl flex items-center justify-center p-4";
+                card.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-contain opacity-80" />`;
+                track.appendChild(card);
+            }
+
+            void track.offsetWidth;
+
+            const cardWidth = 192; 
+            const gap = 16; 
+            const shift = targetIndex * (cardWidth + gap);
+            
+            track.style.transition = 'transform 4s cubic-bezier(0.15, 0.85, 0.15, 1)';
+            track.style.transform = `translate(-${96 + shift}px, -50%)`;
+
+            setTimeout(() => {
+                trackContainer.classList.add('opacity-0');
+                setTimeout(() => trackContainer.classList.add('hidden'), 300);
+
+                title.innerText = "🎉 捕捉成功！";
+                
+                const resultImg = document.getElementById('gacha-result-img');
+                resultImg.src = currentWinnerData.sprite;
+                resultImg.classList.remove('pop-out-effect');
+                void resultImg.offsetWidth; 
+                resultImg.classList.add('pop-out-effect');
+
+                document.getElementById('gacha-pokemon-name').innerText = currentWinnerData.name;
+                
+                resultDiv.classList.remove('hidden');
+                resultDiv.classList.add('flex');
+
+                const announce = new SpeechSynthesisUtterance(`You got ${currentWinnerData.name}!`);
+                announce.lang = 'en-US';
+                window.speechSynthesis.speak(announce);
+                
+            }, 4200);
+        }
+
+        function finishGacha() {
+            document.getElementById('pokemon-gacha-overlay').classList.add('hidden');
+            currentIndex++;
+            isAnimating = false; 
+            loadQuestion();
         }
     </script>
 </body>
